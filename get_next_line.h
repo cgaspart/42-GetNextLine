@@ -6,7 +6,7 @@
 /*   By: cgaspart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 09:21:39 by cgaspart          #+#    #+#             */
-/*   Updated: 2017/11/30 23:23:47 by cgaspart         ###   ########.fr       */
+/*   Updated: 2017/12/04 13:52:52 by cgaspart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,10 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 
-typedef struct		s_str
+typedef	struct		s_str
 {
-	char			*str;
 	int				fd;
-	int				ret;
+	char			*content;
 	struct s_str	*next;
 }					t_str;
 

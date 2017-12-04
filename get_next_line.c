@@ -6,38 +6,50 @@
 /*   By: cgaspart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/29 09:27:38 by cgaspart          #+#    #+#             */
-/*   Updated: 2017/12/01 03:32:48 by cgaspart         ###   ########.fr       */
+/*   Updated: 2017/12/04 16:20:41 by cgaspart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int		ft_nwlinecheck(char		*str)
+static t_str	*ft_getlst(const int fd, t_str *data)
 {
-	int		i;
+	t_str	*ptr;
 
-	i = 0;
-	while (buff[i] != '\0')
+	if (!data)
 	{
-		if (buff[i] == '\n')
-			return (i);
-		i++;
+		data = (t_str*)malloc(sizeof(t_str));
+		data->content = NULL;
+		data->fd = 0;
+		data->next = NULL;
 	}
-	return (0);
+	ptr = data;
+	while (ptr->next && ptr->fd != fd)
+	{
+		ft_putnbr(ptr->fd);
+		ptr = ptr->next;
+	}
+	if (ptr->fd == 0)
+		ptr->fd = fd;
+	if (ptr->fd != fd)
+	{
+		ptr->next = ptr;
+		ptr->fd = fd;
+	}
+	return (ptr);
 }
 
-int		get_next_line(const int fd, char **line)
+int				get_next_line(const int fd, char **line)
 {
-	char			buff[BUFF_SIZE + 1];
 	static t_str	*data;
+	t_str			*ptr;
+	char			*buff;
 
-	if (fd < 0)
+	buff = malloc(sizeof(char) * BUFF_SIZE);
+	if (line == NULL)
 		return (-1);
-	data = (t_str*)malloc(sizeof(t_str));
-	while (!ft_nwlinecheck(data->str))
-	{
-		data->ret = read(fd, buff, BUFF_SIZE);
-		buff[ret] = '\0';
-
-	}
+//	if (fd < 0 || line == NULL || read(fd, buff, 0) < 0)
+//		return (-1);
+	ptr = ft_getlst(fd, data);
+	return (0);
 }
