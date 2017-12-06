@@ -1,0 +1,81 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cgaspart <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/12/05 07:08:56 by cgaspart          #+#    #+#             */
+/*   Updated: 2017/12/05 15:46:02 by cgaspart         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+#include "get_next_line.h"
+
+static char	*ft_realoc(char *res)
+{
+	char	*buff;
+
+	if (res != NULL)
+	{
+		buff = malloc(sizeof(char) * ft_strlen(res));
+		buff = ft_strdup(res);
+		free(res);
+		res = malloc(sizeof(char) * ft_strlen(buff) + BUFF_SIZE + 1);
+		res = ft_strdup(buff);
+	}
+	else
+	{
+		res = malloc(sizeof(char) * BUFF_SIZE + 1);
+	}
+	return (res);
+}
+
+static char	*ft_getbuff(const int fd)
+{
+	char			*buff;
+	int				ret;
+
+	buff = malloc(sizeof(char) * BUFF_SIZE + 1);
+	ret = read(fd, buff, BUFF_SIZE);
+	buff[ret] = '\0';
+	return (buff);
+}
+
+static char	*ft_endl(char *res)
+{
+	char	*buff;
+	int		i;
+
+	i = 0;
+	buff = ft_strdup(res);
+	while (buff[i] != '\0')
+	{
+		if (buff[i] == '\n')
+			buff[i] = '\0';
+		i++;
+	}
+	return (buff);
+}
+
+int		get_next_line(const int fd, char **line)
+{
+	int			j;
+	char		*buff;
+	static char	*res;
+
+	j = 0;
+	buff = ft_getbuff(fd);
+	if (fd < 0 || line == NULL || read(fd, buff, 0) < 0)
+		return (-1);
+	res = ft_realoc(res);
+	while (!ft_strchr(res, '\n'))
+	{
+		res = ft_realoc(res);
+		res = ft_strjoin(res, buff);
+	 	buff = ft_getbuff(fd);
+	}
+	free(buff);
+	*line = ft_endl(res);
+	ft_putstr(*line);
+	return (1);
+}
