@@ -5,14 +5,41 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cgaspart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/12/06 07:00:00 by cgaspart          #+#    #+#             */
-/*   Updated: 2017/12/06 13:12:31 by cgaspart         ###   ########.fr       */
+/*   Created: 2017/12/09 14:51:42 by cgaspart          #+#    #+#             */
+/*   Updated: 2017/12/11 07:24:16 by cgaspart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_aloc(char	*line)
+static void		my_lstadd(t_data **alst, t_data *new)
+{
+	new->next = (*alst);
+	(*alst) = new;
+}
+
+static t_data	*ft_getlst(const int fd, t_data **data)
+{
+	t_data	*ptrdata;
+	t_data	*tmp;
+
+	ptrdata = *data;
+	while (ptrdata)
+	{
+		if ((int)ptrdata->content_size == fd)
+			return (ptrdata);
+		ptrdata = ptrdata->next;
+	}
+	tmp = (t_data*)malloc(sizeof(t_data));
+	tmp->content = NULL;
+	tmp->content_size = fd;
+	tmp->here = 0;
+	ptrdata = tmp;
+	my_lstadd(data, ptrdata);
+	return (ptrdata);
+}
+
+static char		*ft_aloc(char *line)
 {
 	char	*buff;
 
@@ -29,85 +56,51 @@ char	*ft_aloc(char	*line)
 	return (line);
 }
 
-char	*ft_endl(char *line)
+static char		*ft_endl(t_data *glist)
 {
-	char	*save;
 	int		i;
-	int		j;
-	int		check;
+	char	*buffer;
+	char	*res;
 
-	save = ft_strdup(line);
 	i = 0;
-	j = 0;
-	while (save[i] != '\n')
+	buffer = ft_strdup((char*)glist->content);
+	while (buffer[glist->here + i] != '\n' && buffer[glist->here + i] != '\0')
 		i++;
-	check = i;
-	while (save[i + j] != '\0')
+	res = malloc(sizeof(char) * i + 1);
+	i = 0;
+	while (buffer[glist->here + i] != '\n' && buffer[glist->here + i] != '\0')
 	{
-		j++;
-		if (save[i + j] == '\n')
-			check = j + i;
+		res[i] = buffer[glist->here + i];
+		i++;
 	}
-	save[check] = '\0';
-	return (save);
+	glist->here = glist->here + i + 1;
+	res[i] = '\0';
+	free(buffer);
+	return (res);
 }
 
-char	*ft_getline(const int fd)
+int				get_next_line(const int fd, char **line)
 {
-	static char		*line;
+	static t_data	*data;
+	t_data			*glist;
 	char			*buff;
 	int				len;
 
 	buff = malloc(sizeof(char) * BUFF_SIZE + 1);
-	while (!ft_strchr(buff, '\n'))
-	{
-		line = ft_aloc(line);
-		len = read(fd, buff, BUFF_SIZE);
-		if (len == 0)
-			return (NULL);
-		line = ft_strjoin(line, buff);
-	}
-	free(buff);
-	return (ft_endl(line));
-}
-
-char	*ft_pure(char	*buffer)
-{
-	char	*buffer2;
-	int		i;
-	int		j;
-
-	i = 0;
-	j = 0;
-	while (buffer[i] != '\n')
-		i++;
-	i++;
-	while (buffer[i + j] != '\0')
-		j++;
-	buffer2 = malloc (sizeof(char) * i + j + 1);
-	j = 0;
-	while (buffer[i + j] != '\0')
-	{
-		buffer2[j] = buffer[i + j];
-		j++;
-	}
-	buffer2[j] = '\0';
-	free(buffer);
-	return (buffer2);
-}
-
-int		get_next_line(const int fd, char **line)
-{
-	char buff[1];
-
 	if (fd < 0 || line == NULL || read(fd, buff, 0) < 0)
 		return (-1);
-	*line = ft_getline(fd);
-	if (*line == NULL)
-		return (0);
-	while (ft_strchr(*line, '\n'))
+	glist = ft_getlst(fd, &data);
+	while ((len = read(fd, buff, BUFF_SIZE)))
 	{
-		*line = ft_pure(*line);
+		buff[len] = '\0';
+		glist->content = ft_aloc((char*)glist->content);
+		glist->content = ft_strjoin((char*)glist->content, buff, 1);
+		if (ft_strchr(buff, '\n'))
+			break ;
 	}
+	free(buff);
+	if (glist->here >= (int)ft_strlen(glist->content))
+		return (0);
+	*line = ft_endl(glist);
 	return (1);
 }
