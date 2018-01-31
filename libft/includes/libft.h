@@ -6,7 +6,7 @@
 /*   By: cgaspart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/09 10:41:15 by cgaspart          #+#    #+#             */
-/*   Updated: 2018/01/06 22:26:06 by cgaspart         ###   ########.fr       */
+/*   Updated: 2018/01/10 08:13:45 by cgaspart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ char				*ft_strncpy(char *dest, const char *src, size_t n);
 char				*ft_strcat(char *dest, const char *src);
 char				*ft_strncat(char *dest, const char *src, size_t n);
 char				*ft_strdup(const char *s);
+char				*ft_strrealloc(char *line, int len);
 int					ft_atoi(const char *str);
 char				*ft_strstr(const char *haystack, const char *needle);
 int					ft_isdigit(int c);

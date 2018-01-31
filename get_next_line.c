@@ -6,7 +6,7 @@
 /*   By: cgaspart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/09 14:51:42 by cgaspart          #+#    #+#             */
-/*   Updated: 2018/01/09 18:06:08 by cgaspart         ###   ########.fr       */
+/*   Updated: 2018/01/10 08:57:39 by cgaspart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void		my_lstadd(t_data **alst, t_data *new)
 	(*alst) = new;
 }
 
-char	*ft_strfjoin(char *s1, char const *s2)
+char			*ft_strfjoin(char *s1, char const *s2)
 {
 	char	*fraiche;
 	int		len;
@@ -55,28 +55,6 @@ static t_data	*ft_getlst(const int fd, t_data **data)
 	ptrdata = tmp;
 	my_lstadd(data, ptrdata);
 	return (ptrdata);
-}
-
-static char		*ft_aloc(char *line, int len)
-{
-	char	*buff;
-
-	if (line == NULL)
-	{
-		line = (char*)malloc(sizeof(char) * BUFF_SIZE + 1);
-		// line = ft_strnew(BUFF_SIZE);
-	}
-	else
-	{
-		buff = ft_strdup(line);
-		free(line);
-		line = malloc(sizeof(char) * (ft_strlen(buff) + len));
-		ft_strcpy(line, buff);
-		free(buff);
-		buff = NULL;
-
-	}
-	return (line);
 }
 
 static char		*ft_endl(t_data *glist)
@@ -116,7 +94,10 @@ int				get_next_line(const int fd, char **line)
 	while ((len = read(fd, buff, BUFF_SIZE)))
 	{
 		buff[len] = '\0';
-		glist->content = ft_aloc((char*)glist->content, len);
+		if (glist->content == NULL)
+			glist->content = ft_strrealloc((char*)glist->content, BUFF_SIZE);
+		else
+			glist->content = ft_strrealloc((char*)glist->content, len);
 		glist->content = ft_strfjoin((char*)glist->content, buff);
 		if (ft_strchr(buff, '\n'))
 			break ;

@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strrealloc.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cgaspart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/29 09:21:39 by cgaspart          #+#    #+#             */
-/*   Updated: 2018/01/10 08:54:18 by cgaspart         ###   ########.fr       */
+/*   Created: 2018/01/10 08:12:49 by cgaspart          #+#    #+#             */
+/*   Updated: 2018/01/10 08:46:43 by cgaspart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-# define BUFF_SIZE 42
+#include "libft.h"
 
-# include "libft/includes/libft.h"
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <fcntl.h>
-
-typedef struct		s_data
+char	*ft_strrealloc(char *line, int len)
 {
-	void			*content;
-	size_t			content_size;
-	int				here;
-	struct s_data	*next;
-}					t_data;
+	char*buff;
 
-int					get_next_line(const int fd, char **line);
-
-#endif
+	if (line == NULL)
+	{
+		line = (char*)malloc(sizeof(char) * len + 1);
+	}
+	else
+	{
+		buff = ft_strdup(line);
+		free(line);
+		line = malloc(sizeof(char) * (ft_strlen(buff) + len));
+		ft_strcpy(line, buff);
+		free(buff);
+	}
+	return (line);
+}
